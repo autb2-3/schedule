@@ -1,46 +1,46 @@
 class PostsController < ApplicationController
   def index
-    @posts=Post.all
+    @posts = Post.all
+  end
+  
+  def edit
+    @post= Post.find(params[:id])
   end
   
   def new
     @post=Post.new
   end
   
-  def create
-    @post = Post.new(params.require(:post).permit(:title, :start_at, :end_at, :allday,:memo))
-      if @post.save
-        flash[:notice] = "ユーザーを新規登録しました"
-        redirect_to :posts
-      else
-        render "new"
-      end
-
-  end
-  
   def show
     @post = Post.find(params[:id])
   end
   
-  def edit
+  def update
     @post = Post.find(params[:id])
+    @post.update(post_params)
+    redirect_to @post
   end
   
-  def update  
-    @post = Post.find(params[:id])
-      if @post.update(params.require(:post).permit(:title, :start_at, :end_at, :allday,:memo))
-        flash[:notice] = "ユーザーIDが「#{@post.id}」の情報を更新しました"
-        redirect_to :posts
-      else
-        render "edit"
-      end
+  def create
+     @post = Post.create(post_params)
+
+    if @post.save
+      flash[:notice] = 'スケジュールが投稿されました'
+      redirect_to @post
+    else
+      flash[:notice] = 'スケジュールが投稿されません'
+      render :new
+    end
   end
-  
+
   def destroy
-    @post=Post.find(params[:id])
+    @post = Post.find(params[:id])
     @post.destroy
-    flash[:notice]="スケジュールを削除しました"
-    redirect_to :posts
+    redirect_to @post
   end
   
+private
+  def post_params
+      params.require(:post).permit(:title, :start_at, :end_at, :allday, :memo)
+  end
 end
